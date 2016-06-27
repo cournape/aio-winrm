@@ -12,14 +12,14 @@ from .namespaces import (
 
 @attributes
 class Header:
+    action = attr()
     id = attr(default=Factory(uuid.uuid4))
-    action = attr(default="")
-    to = attr(default="")
-    reply_to = attr(default="")
+    to = attr(default="http://windows-host:5985/wsman")
+    reply_to = attr(default="http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous")
     max_envelope_size = attr(default=None, validator=optional(instance_of(int)))
     timeout = attr(default="PT60S")
     shell_id = attr(default=None, validator=optional(instance_of(str)))
-    resource_uri = attr(default="")
+    resource_uri = attr(default="http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd")
     options = attr(validator=instance_of(dict), default=Factory(dict))
 
     locale = attr(default="en-US")
@@ -28,11 +28,10 @@ class Header:
     def to_dom(self):
         header = etree.Element(SOAP_ENV + "Header")
 
-        if self.action != "":
-            action = etree.SubElement(
-                header, ADDRESSING + "Action", mustUnderstand="true"
-            )
-            action.text = self.action
+        action = etree.SubElement(
+            header, ADDRESSING + "Action", mustUnderstand="true"
+        )
+        action.text = self.action
 
         if self.reply_to != "":
             reply_to = etree.SubElement(header, ADDRESSING + "ReplyTo")
@@ -93,25 +92,3 @@ class Header:
             locale.attrib[XML + "lang"] = self.data_locale
 
         return header
-
-
-"""
-    message := soap.NewMessage()
-    defaultHeaders(message, uri, params).
-        Action("http://schemas.xmlsoap.org/ws/2004/09/transfer/Create").
-        ResourceURI("http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd").
-        AddOption(soap.NewHeaderOption("WINRS_NOPROFILE", "FALSE")).
-        AddOption(soap.NewHeaderOption("WINRS_CODEPAGE", "65001")).
-        Build()
-
-    body := message.CreateBodyElement("Shell", soap.NS_WIN_SHELL)
-    input := message.CreateElement(body, "InputStreams", soap.NS_WIN_SHELL)
-    input.SetContent("stdin")
-    output := message.CreateElement(body, "OutputStreams", soap.NS_WIN_SHELL)
-    output.SetContent("stdout stderr")
-"""
-
-#@attributes
-#class Message:
-#    envelope = attr()
-#    header = attr()
