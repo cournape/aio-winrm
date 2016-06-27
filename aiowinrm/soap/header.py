@@ -64,10 +64,13 @@ class Header:
         message_id.text = "uuid:{}".format(str(self.id))
 
         if self.shell_id:
-            shell_id = etree.SubElement(
-                header, ADDRESSING + "SelectorSet", Name="ShellId",
+            selector_set = etree.SubElement(
+                header, WSMAN_DMTF + "SelectorSet",
             )
-            shell_id.text = self.shell_id
+            selector = etree.SubElement(
+                selector_set, WSMAN_DMTF + "Selector", Name="ShellId"
+            )
+            selector.text = self.shell_id
 
         if len(self.options) > 0:
             option_set = etree.SubElement(header,  WSMAN_DMTF + "OptionSet")
