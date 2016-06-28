@@ -1,10 +1,16 @@
 import lxml.etree as etree
+import requests
 
+from attr import attributes, attr
+from attr.validators import instance_of
+
+from .constants import TranportKind
 from .soap.protocol import (
     cleanup_command, close_shell_payload, command_output, create_command,
     create_shell_payload, parse_create_shell_response,
     parse_create_command_response, parse_command_output
 )
+from .utils import parse_host
 
 
 class ShellContext:
@@ -93,4 +99,33 @@ class CommandContext:
             if err:
                 err_buffer.append(err)
 
-        return "\n".join(out_buffer), "\n".join(err_buffer)
+        return "\n".join(out_buffer), "\n".join(err_buffer), return_code
+
+
+@attributes
+class Response:
+    stdout = attr(validator=instance_of(str))
+    stderr = attr(validator=instance_of(str))
+    returncode = attr(validator=instance_of(int))
+
+
+class Session:
+    def __init__(self, session, host):
+        self.session = session
+        self.host = parse_host(host, TranportKind.http)
+
+    def run_cmd(self, cmd, args=(), env=None, cwd=None):
+        with ShellContext(self.session, self.host, env=env, cwd=cwd) as shell_context:
+            with CommandContext.from_shell_context(
+                shell_context, cmd, args
+            ) as command_context:
+                stdout, stderr, return_code = command_context.get_output()
+                return Response(stdout, stderr, return_code)
+
+
+def run_cmd(host, auth, cmd, args=(), env=None, cwd=None):
+    with requests.Session() as session:
+        session.auth = auth
+
+        winrm_session = Session(session, host)
+        return winrm_session.run_cmd(cmd, args, env=env, cwd=cwd)
