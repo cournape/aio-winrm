@@ -174,6 +174,8 @@ def main():
         author="David Cournapeau",
         author_email="cournape@gmail.com",
         name="aiowinrm",
+        description="A python 3.5+ async library for the WinRM protocol",
+        url="https://github.com/cournape/aio-winrm",
         version=version,
         packages=PACKAGES,
         install_requires=INSTALL_REQUIRES,
