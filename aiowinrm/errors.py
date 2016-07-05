@@ -1,0 +1,2 @@
+class AIOWinRMException(Exception):
+    pass
