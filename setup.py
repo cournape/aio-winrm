@@ -177,6 +177,7 @@ def main():
         description="A python 3.5+ async library for the WinRM protocol",
         url="https://github.com/cournape/aio-winrm",
         version=version,
+        license="Apache 2.0",
         packages=PACKAGES,
         install_requires=INSTALL_REQUIRES,
     )
