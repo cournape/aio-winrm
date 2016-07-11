@@ -12,7 +12,7 @@ Sync API:
 Tentative async API:
 
     import asyncio
-    from aiowinrm import winrm_command
+    from aiowinrm import run_cmd
 
     def callback_factory(host):
         """ Returns a callback that prefix every output line by host.
