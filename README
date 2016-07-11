@@ -1,6 +1,8 @@
 Python 3.5+ library implementing the WinRM protocol on top of asyncio. Work in
 progress: no TLS (plain text only), API not stable.
 
+aio-winrm is licensed under the APACHE 2.0 license.
+
 Sync API:
 
     from aiowinrm.sync import run_cmd
